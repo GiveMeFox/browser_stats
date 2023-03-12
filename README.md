@@ -4,7 +4,7 @@ Browser stats for now is just for counting how many times you visited a website 
 ## Table Of Content
 
 - [Supported Browsers](#supported-browsers)
-- [TODO](#todo-)
+- [TODO](#todo)
 
 ## Supported Browsers
 - Firefox
