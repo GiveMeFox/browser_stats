@@ -112,6 +112,8 @@ fn get_file_path(start_path: &PathBuf, file_name: &str) -> Option<String> {
 
 fn main() {
     let operating_system = env::consts::OS;
+    println!("OS: {}", operating_system);
+
     let user = whoami::username();
     let root_firefox_path: String;
     let root_firefox_directories: Vec<String>;
