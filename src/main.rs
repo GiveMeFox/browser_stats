@@ -118,7 +118,7 @@ fn main() {
 
     if operating_system == "windows" { // TODO: windows moment
         let appdata_folder = dirs::data_local_dir().unwrap();
-        let firefox_profiles_folder = appdata_folder.join("Mozilla/Firefox/Profiles/");
+        let firefox_profiles_folder = appdata_folder.join("Mozilla/Firefox");
         println!("Firefox profiles folder: {:?}", firefox_profiles_folder);
 
         root_firefox_path = format!("/home/{}/.mozilla/firefox", user);
