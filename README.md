@@ -15,3 +15,5 @@ Browser stats for now is just for counting how many times you visited a website 
 - [ ] make a dynamic utils class instead of random functions everywhere
 - [ ] add the link counting and displaying the results
 - [ ] add support for any other browser then firefox
+- [ ] support for custom browser install directories
+- [ ] config file
