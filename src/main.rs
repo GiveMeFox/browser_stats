@@ -6,7 +6,7 @@ use regex::Regex;
 use walkdir::WalkDir;
 use whoami;
 use std::env;
-use dirs;
+use clap::{Parser};
 
 fn get_directories_in_directory(dir_path: &str) -> Vec<String> {
     let mut directories = vec![];
@@ -110,7 +110,21 @@ fn get_file_path(start_path: &PathBuf, file_name: &str) -> Option<String> {
     None
 }
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, default_value_t = 1)]
+    browser: u8,
+
+    #[arg(short, long, default_value = "false")]
+    debug: bool,
+}
+
 fn main() {
+    let args = Args::parse();
+
+    println!("Browser: {}\nDebug: {}", args.browser, args.debug);
+
     let operating_system = env::consts::OS;
     println!("OS: {}", operating_system);
 
@@ -119,7 +133,7 @@ fn main() {
     let root_firefox_directories: Vec<String>;
 
     if operating_system == "windows" { // TODO: windows moment
-        root_firefox_path = "C:\\Users\\adaml\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles".to_owned();
+        root_firefox_path = format!("C:\\Users\\{}\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles", user);
         root_firefox_directories = get_directories_in_directory(&root_firefox_path);
     } else {
         root_firefox_path = format!("/home/{}/.mozilla/firefox", user);
