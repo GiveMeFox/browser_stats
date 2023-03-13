@@ -119,11 +119,7 @@ fn main() {
     let root_firefox_directories: Vec<String>;
 
     if operating_system == "windows" { // TODO: windows moment
-        let appdata_folder = dirs::data_local_dir().unwrap();
-        let firefox_profiles_folder = appdata_folder.join("Mozilla/Firefox");
-        println!("Firefox profiles folder: {:?}", firefox_profiles_folder);
-
-        root_firefox_path = format!("/home/{}/.mozilla/firefox", user);
+        root_firefox_path = "C:\\Users\\adaml\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles".to_owned();
         root_firefox_directories = get_directories_in_directory(&root_firefox_path);
     } else {
         root_firefox_path = format!("/home/{}/.mozilla/firefox", user);
