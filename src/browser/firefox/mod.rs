@@ -28,7 +28,7 @@ impl Firefox {
 
     fn get_path() -> Option<String> {
         match env::consts::OS {
-            "windows" => Some("C:\\Users\\%USERNAME%\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles".to_string()),
+            "windows" => Some(format!("C:\\Users\\{}\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles", whoami::username())),
             "linux" => Some(format!("/home/{}/.mozilla/firefox", whoami::username())),
             _ => None,
         }
