@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+atty = "0.2.14"
 clap = { version = "4.1.8", features = ["derive", "string"] }
 dirs = "4.0.0"
+owo-colors = { version = "3.5.0", features = ["supports-color", "supports-colors"]}
 regex = "1.7.1"
 walkdir = "2.3.2"
 whoami = "1.3.0"
