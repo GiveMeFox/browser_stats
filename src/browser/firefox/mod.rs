@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 use std::env;
+use std::path::Path;
 use owo_colors::{OwoColorize, colors::*};
-use atty::Stream;
 use crate::Args;
+use std::error::Error;
+use std::fmt;
 
 use crate::utils::*;
+use crate::utils::supports_ansi;
 
 pub struct Firefox {
     pub root_firefox_path: String,
@@ -13,17 +16,42 @@ pub struct Firefox {
     pub database_map: HashMap<String, String>,
 }
 
+#[derive(Debug)]
+pub struct FirefoxError(String);
+
+impl fmt::Display for FirefoxError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Error for FirefoxError {}
+
 impl Firefox {
-    pub fn new() -> Firefox {
+    pub fn new() -> Result<Firefox, FirefoxError> {
         let root_firefox_path = match Self::get_path() {
             Some(value) => value.to_string(),
-            None => panic!("Unsupported Operating System: {}", env::consts::OS)
+            None => "".to_string(),
         };
+
+        if root_firefox_path == "".to_string() {
+            return Err(FirefoxError(format!("Unsupported Operating System: {}", env::consts::OS)));
+        }
+
+        if !Path::new(&root_firefox_path).exists() {
+            return Err(FirefoxError(format!("Firefox Not Found At: {}", root_firefox_path)));
+        }
 
         let root_firefox_directories = get_directories_in_directory(&root_firefox_path);
         let profiles = filter_directories(root_firefox_directories.clone(), "(?i)(safe|default)");
-        let database_map = get_profile_database_map(root_firefox_path.as_str(), &profiles);
-        Firefox { root_firefox_path, root_firefox_directories, profiles, database_map }
+        let database_map = get_profile_database_map(&root_firefox_path, &profiles);
+
+        Ok(Firefox {
+            root_firefox_path,
+            root_firefox_directories,
+            profiles,
+            database_map,
+        })
     }
 
     fn get_path() -> Option<String> {
@@ -35,7 +63,7 @@ impl Firefox {
     }
 
     pub fn print_info(&self, args: &Args) {
-        let use_color = atty::is(Stream::Stdout);
+        let use_color = supports_ansi();
 
         let browser = if use_color {
             format!("{} {} {}{}",

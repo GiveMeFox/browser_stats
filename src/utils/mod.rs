@@ -1,9 +1,10 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{fs};
 
 use std::path::{Path, PathBuf};
 use regex::Regex;
 use walkdir::{DirEntry, WalkDir};
+use supports_color::Stream;
 
 pub fn filter_directories(dir_names: Vec<String>, regex_str: &str) -> Vec<String> {
     let regex = Regex::new(regex_str).unwrap();
@@ -74,4 +75,12 @@ fn get_file_path(start_path: &PathBuf, file_name: &str) -> Option<String> {
         }
     }
     None
+}
+
+pub fn supports_ansi() -> bool {
+    return if let Some(_) = supports_color::on(Stream::Stdout) {
+        true
+    } else {
+        false
+    }
 }
