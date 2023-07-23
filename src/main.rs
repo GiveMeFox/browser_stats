@@ -35,13 +35,13 @@ fn get_links_from_databases(databases: &HashMap<String, String>) -> Vec<(String,
                         links.push((dir_name.clone(), links_from_db));
                     }
                     Err(err) => {
-                        eprintln!("Error loading data from database {}: {}", db_path, err);
+                        eprintln!("Error Loading Data From Database {}: {}", db_path, err);
                         links.push((dir_name.clone(), Vec::new()));
                     }
                 }
             }
             Err(err) => {
-                eprintln!("Error connecting to database {}: {}", db_path, err);
+                eprintln!("Error Connecting To Database {}: {}", db_path, err);
             }
         }
     }
@@ -52,14 +52,14 @@ fn get_links_from_databases(databases: &HashMap<String, String>) -> Vec<(String,
 fn extract_hostname(url_string: &str) -> Option<String> {
     if let Ok(url) = Url::parse(url_string) {
         if let Some(host) = url.host_str() {
-            let mut hostname_parts: Vec<&str> = host.split('.').collect();
-            let len = hostname_parts.len();
-            if len > 1 && hostname_parts[len - 2] == "co" {
-                // Handle .co.uk, .co.jp, etc.
-                hostname_parts[len - 2] = hostname_parts[len - 3];
-            }
-            let hostname = hostname_parts.join(".");
-            return Some(hostname);
+            // let mut hostname_parts: Vec<&str> = host.split('.').collect();
+            // let len = hostname_parts.len();
+            // if len > 1 && hostname_parts[len - 2] == "co" {
+            //     // Handle .co.uk, .co.jp, etc.
+            //     hostname_parts[len - 2] = hostname_parts[len - 3];
+            // }
+            // let hostname = hostname_parts.join(".");
+            return Some(host.to_string());
         }
     }
     None
@@ -79,9 +79,7 @@ fn count_sites(profiles: &Vec<(String, Vec<String>)>) {
                 continue
             }
 
-            // println!("domain: {}", domain);
-
-            let domain_parts: Vec<&str> = domain.split('.').rev().take(2).collect();
+            let domain_parts: Vec<&str> = domain.split('.').rev().collect();
             let domain_name = domain_parts.into_iter().rev().collect::<Vec<&str>>().join(".");
 
             domains.insert(domain_name.clone());
@@ -101,7 +99,7 @@ fn count_sites(profiles: &Vec<(String, Vec<String>)>) {
                 println!("{}: {}", site, count);
             }
         } else {
-            println!("No site counts found for profile '{}'", profile_name);
+            println!("No Sites Where Visited On This Profile '{}'", profile_name);
         }
         println!();
     }

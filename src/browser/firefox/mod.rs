@@ -5,9 +5,9 @@ use owo_colors::{OwoColorize, colors::*};
 use crate::Args;
 use std::error::Error;
 use std::fmt;
+use ini::ini;
 
 use crate::utils::*;
-use crate::utils::supports_ansi;
 
 pub struct Firefox {
     pub root_firefox_path: String,
@@ -29,12 +29,9 @@ impl Error for FirefoxError {}
 
 impl Firefox {
     pub fn new() -> Result<Firefox, FirefoxError> {
-        let root_firefox_path = match Self::get_path() {
-            Some(value) => value.to_string(),
-            None => "".to_string(),
-        };
+        let root_firefox_path = Self::get_path().unwrap_or("".to_string());
 
-        if root_firefox_path == "".to_string() {
+        if root_firefox_path.is_empty() {
             return Err(FirefoxError(format!("Unsupported Operating System: {}", env::consts::OS)));
         }
 
@@ -44,6 +41,25 @@ impl Firefox {
 
         let root_firefox_directories = get_directories_in_directory(&root_firefox_path);
         let profiles = filter_directories(root_firefox_directories.clone(), "(?i)(safe|default)");
+
+        if profiles.is_empty() {
+            return Err(FirefoxError("No Profiles Found".to_string()));
+        }
+
+        let profiles_ini: HashMap<String, HashMap<String, Option<String>>> = ini!(format!("{}profiles.ini", root_firefox_path).as_str());
+
+        let profile_file_names_from_ini: Vec<String> = profiles_ini
+            .iter()
+            .filter_map(|(_, profile)| profile.get("path").cloned())
+            .flatten()
+            .collect();
+
+        for profile_from_ini in &profile_file_names_from_ini {
+            if !profiles.contains(profile_from_ini) && profiles.len() != profile_file_names_from_ini.len() {
+                return Err(FirefoxError("Files Don't Match With profiles.ini".to_string()));
+            }
+        }
+
         let database_map = get_profile_database_map(&root_firefox_path, &profiles);
 
         Ok(Firefox {
@@ -56,8 +72,8 @@ impl Firefox {
 
     fn get_path() -> Option<String> {
         match env::consts::OS {
-            "windows" => Some(format!("C:\\Users\\{}\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles", whoami::username())),
-            "linux" => Some(format!("/home/{}/.mozilla/firefox", whoami::username())),
+            "windows" => Some(format!("C:\\Users\\{}\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\", whoami::username())),
+            "linux" => Some(format!("/home/{}/.mozilla/firefox/", whoami::username())),
             _ => None,
         }
     }
